@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Missions 4 and 5. The slides: a directed graph. Cells are 0 .. n-1, slide i goes from s.from()[i] to s.to()[i]
@@ -91,7 +93,39 @@ public class Zones {
      * [1] the cost of the cheapest route from the zone of cell 0 to the zone of the last cell.
      */
     public static long[] routes(Input.Slides s, int[] zoneOf, int zoneCount) {
-        // TODO
-        return new long[]{0, 0};
+        List<List<int[]>> edges = new ArrayList<>();
+        for (int z = 0; z < zoneCount; z++) {
+            edges.add(new ArrayList<>());
+        }
+        for (int i = 0; i < s.count(); i++) {
+            int x = zoneOf[s.from()[i]];
+            int y = zoneOf[s.to()[i]];
+            if (x != y) {
+                edges.get(x).add(new int[]{y, s.time()[i]});
+            }
+        }
+
+        long[] stages = new long[zoneCount];
+        long[] dist = new long[zoneCount];
+        Arrays.fill(stages, 1);
+        Arrays.fill(dist, Long.MAX_VALUE);
+        dist[zoneOf[0]] = 0;
+
+        for (int x = 0; x < zoneCount; x++) {
+            for (int[] e : edges.get(x)) {
+                int y = e[0];
+                int time = e[1];
+                stages[y] = Math.max(stages[y], stages[x] + 1);
+                if (dist[x] != Long.MAX_VALUE) {
+                    dist[y] = Math.min(dist[y], dist[x] + time);
+                }
+            }
+        }
+
+        long flowStages = 0;
+        for (long st : stages) {
+            flowStages = Math.max(flowStages, st);
+        }
+        return new long[]{flowStages, dist[zoneOf[s.n() - 1]]};
     }
 }
