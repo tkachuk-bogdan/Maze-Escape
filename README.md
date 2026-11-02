@@ -69,11 +69,13 @@ Milliseconds, 5 runs each, from `java -cp out Bench`.
 
 | maze | Kruskal | Prim |
 |---|---|---|
-| 100 x 100 | | |
-| 300 x 300 | | |
-| 1000 x 1000 | | |
+| 100 x 100 | 27 19 29 30 25, avg 26 | 43 15 12 12 9, avg 18 |
+| 300 x 300 | 199 167 78 98 81, avg 124 | 130 130 120 120 132, avg 126 |
+| 1000 x 1000 | 1868 1890 1765 1838 1996, avg 1871 | 2715 2820 3382 3031 2883, avg 2966 |
 
 What do the numbers say about how the time grows? Two or three sentences.
+
+From 300 x 300 to 1000 x 1000 the number of walls grows about 11 times, Kruskal grows about 15 times and Prim about 24 times, so both grow a bit faster than linear, as expected for O(m log m). Kruskal spends most of its time sorting the walls; Prim is slower on the big maze because it puts up to 2m small objects into the priority queue, which costs more memory and garbage collection. On 100 x 100 the times are small and noisy, and the first run is slower because the JVM has not warmed up yet.
 
 ## Complexity
 
@@ -81,12 +83,12 @@ n is the number of cells, m the number of walls (or slides). Fill in every algor
 
 | algorithm | time | space | assumptions |
 |---|---|---|---|
-| DSU find and union | | | |
-| Kruskal | | | |
-| Prim | | | |
-| DFS | | | |
-| Kosaraju | | | |
-| Route in the zone graph | | | |
+| DSU find and union | O(α(n)) amortized, at most O(log n) | O(n) | union by size and path compression |
+| Kruskal | O(m log m) | O(n + m) | sorting the walls is the main cost |
+| Prim | O(m log m) | O(n + m) | binary heap (PriorityQueue), lazy version, up to 2m entries |
+| DFS | O(n + m) | O(n + m) | own stack, no recursion; in the maze m = n - 1 |
+| Kosaraju | O(n + m) | O(n + m) | two passes, each cell and slide once per pass |
+| Route in the zone graph | O(n + m) | O(n + m) | zones already in topological order, one pass, no priority queue |
 
 ## Before you submit
 
